@@ -104,6 +104,8 @@ for i in range(0, len(amplitude_vals)):
     updated_param_list["d_E"]=amplitude_vals[i]
     sim=single_electron(None, updated_param_list, simulation_options, other_values, param_bounds)
     h_class=harmonics(sim.other_values["harmonic_range"], sim.dim_dict["omega"], 0.05)
+    #Everything withing the class is non-dimensional, and has to be manually re-dimensionalised using the X_nondim functions
+    #hence, sim.time_vec is non-dimensional, and sim.t_nondim(sim.time_vec) is dimensional
     time=sim.t_nondim(sim.time_vec)
     sim.def_optim_list(["E_0"])
     non_dispersed=sim.i_nondim(sim.test_vals([-0.2], "timeseries"))
@@ -111,6 +113,8 @@ for i in range(0, len(amplitude_vals)):
     dispersion_class=single_electron(None, updated_param_list, simulation_options, other_values, param_bounds)
     dispersion_class.def_optim_list(["E0_mean", "E0_std"])
     for j in range(0, len(std_dev_vals)):
+        #dispersion_class.test_vals([param_list], "format") returns a non-dimensional current
+        #hence dispersion_class.i_nondim(dispersion_class.test_vals([param_list], "format")) is the dimensional current
         dispersed=dispersion_class.i_nondim(dispersion_class.test_vals([-0.2, std_dev_vals[j]], "timeseries"))
         plot_dict["{0}V_time_series".format(std_dev_vals[j])]=dispersed
     if i==2:
